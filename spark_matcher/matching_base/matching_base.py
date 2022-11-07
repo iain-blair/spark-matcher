@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 from thefuzz.fuzz import token_set_ratio, token_sort_ratio
 
-from spark_matcher.activelearner.active_learner import ScoringLearner
+from spark_matcher.activelearner.active_learner import DataBricksScoringLearner
 from spark_matcher.blocker.block_learner import BlockLearner
 from spark_matcher.sampler.training_sampler import HashSampler, RandomSampler
 from spark_matcher.scorer.scorer import Scorer
@@ -56,7 +56,7 @@ class MatchingBase:
 
         if not scorer:
             scorer = Scorer(self.spark_session)
-        self.scoring_learner = ScoringLearner(self.col_names, scorer, verbose=self.verbose)
+        self.scoring_learner = DataBricksScoringLearner(self.col_names, scorer, verbose=self.verbose)
 
         self.blocking_rules = blocking_rules
         if not self.blocking_rules:
