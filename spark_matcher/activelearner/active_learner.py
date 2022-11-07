@@ -208,3 +208,34 @@ class ScoringLearner:
         Returns: match probabilities
         """
         return self.learner.estimator.predict_proba(X)
+
+class DataBricksScoringLearner(ScoringLearner):
+    """
+    Class that overrides the input features of ScoringLearner class
+    so that inputs can be fed via databricks widgets
+    """
+    def __init__(self, col_names: List[str], scorer: BaseEstimator, min_nr_samples: int = 10,
+                 uncertainty_threshold: float = 0.1, uncertainty_improvement_threshold: float = 0.01,
+                 n_uncertainty_improvement: int = 5, n_queries: int = 9999, sampling_method=uncertainty_sampling,
+                 verbose: int = 0):
+        super().__init__(col_names, scorer, min_nr_samples,
+                 uncertainty_threshold, uncertainty_improvement_threshold,
+                 n_uncertainty_improvement, n_queries, sampling_method,
+                 verbose)
+
+    def _input_assert(self, message: str, choices: List[str]) -> str:
+        """
+        Adds functionality to the python function `input` to limit the choices that can be returned
+        Args:
+            message: message to user
+            choices: list containing possible choices that can be returned
+        Returns:
+            input returned by user
+        """
+        output = dbutils.widgets.get("matcher_input:").lower()
+        output = input(message).lower()
+        if output not in choices:
+            print(f"Wrong input! Your input should be one of the following: {', '.join(choices)}")
+            return self._input_assert(message, choices)
+        else:
+            return output 
