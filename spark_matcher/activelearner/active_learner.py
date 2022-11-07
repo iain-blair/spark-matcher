@@ -3,6 +3,7 @@
 #          Frits Hermans
 
 from typing import List, Optional, Union
+from webbrowser import get
 
 import numpy as np
 import pandas as pd
@@ -11,6 +12,22 @@ from modAL.uncertainty import uncertainty_sampling
 from pyspark.sql import DataFrame
 from sklearn.base import BaseEstimator
 import time
+
+
+def get_db_utils():
+    from pyspark.sql import SparkSession
+    spark = SparkSession.builder.getOrCreate()
+    dbutils = None
+      
+    if spark.conf.get("spark.databricks.service.client.enabled") == "true":
+        from pyspark.dbutils import DBUtils
+        dbutils = DBUtils(spark)
+      
+    else:
+        import IPython
+        dbutils = IPython.get_ipython().user_ns["dbutils"]
+    return dbutils
+
 
 class ScoringLearner:
     """
@@ -233,6 +250,7 @@ class DataBricksScoringLearner(ScoringLearner):
             input returned by user
         """
         time.sleep(5)
+        dbutils = get_db_utils()
         output = dbutils.widgets.get("matcher_input").lower()
         if output not in choices:
             print(f"Wrong input! Your input should be one of the following: {', '.join(choices)}")
