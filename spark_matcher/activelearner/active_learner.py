@@ -10,7 +10,7 @@ from modAL.models import ActiveLearner
 from modAL.uncertainty import uncertainty_sampling
 from pyspark.sql import DataFrame
 from sklearn.base import BaseEstimator
-
+import time
 
 class ScoringLearner:
     """
@@ -232,8 +232,8 @@ class DataBricksScoringLearner(ScoringLearner):
         Returns:
             input returned by user
         """
-        output = dbutils.widgets.get("matcher_input:").lower()
-        output = input(message).lower()
+        time.sleep(5)
+        output = dbutils.widgets.get("matcher_input").lower()
         if output not in choices:
             print(f"Wrong input! Your input should be one of the following: {', '.join(choices)}")
             return self._input_assert(message, choices)
